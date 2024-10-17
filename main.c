@@ -16,7 +16,22 @@ struct Pedido{
 };
 typedef struct Pedido Pedido;
 
+struct Pedidos{
+    Pedido pedido;
+    int quantPedidos;
 
+};
+typedef struct Pedidos Pedidos;
+
+
+
+
+void Inserir(Pedidos *vetorPedidos){
+    printf("Informe o número do pedido: ");
+    scanf("%d",&(vetorPedidos[0].pedido.nPedido));
+
+    
+}
 
 
 int menu() {
@@ -39,9 +54,9 @@ int menu() {
 }
 
 
-
 int main() {
-    Pedido vetorPedidos[100];
+    SetConsoleOutputCP(65001);
+    Pedidos vetorPedidos[100];
     int op;
 
 
@@ -53,7 +68,8 @@ int main() {
 				// SAIR. NÃO PRECISA FAZER NADA
 				break;
 			case 1:
-				// INSERIR
+				Inserir(&vetorPedidos);
+                printf("%d",(vetorPedidos[0].pedido.nPedido));
 				break;
 			case 2:
 				// PESQUISAR POR CODIGO/MATRICULA
