@@ -14,11 +14,71 @@ struct Pedido{
     char nomeCliente[100];
 
 };
+typedef struct Pedido Pedido;
 
 
 
 
-int main(){
+int menu() {
+	int op;
+	system("@cls||clear");  // LIMPA A TELA
+	printf("\n\nSISTEMA XXYYZZ\n\n");
+	printf("1 - Inserir\n");
+	printf("2 - Pesquisar por número\n");
+	printf("3 - Pesquisar por nome\n");
+	printf("4 - Atualizar\n");
+	printf("5 - Maior\n");
+	printf("6 - Excluir\n");
+	printf("7 - Listar\n");
+	printf("0 - Sair\n");
+	do {
+		printf("Escolha sua opção: ");
+		scanf(" %d", &op);
+	} while(op < 0 || op > 7);
+	return op;
+}
 
-    return 0;
+
+
+int main() {
+    Pedido vetorPedidos[100];
+    int op;
+
+
+
+	do {
+		op = menu();
+		switch ( op ) {
+			case 0:
+				// SAIR. NÃO PRECISA FAZER NADA
+				break;
+			case 1:
+				// INSERIR
+				break;
+			case 2:
+				// PESQUISAR POR CODIGO/MATRICULA
+				break;
+			case 3:
+				// PESQUISAR POR NOME
+				break;
+			case 4:
+				// ATUALIZAR
+				break;
+			case 5:
+				// MAIOR
+				break;
+			case 6:
+				// EXCLUIR
+				break;
+			case 7:
+				// LISTAR
+				break;
+			default:
+				printf ("\n\nOpçãoo inválida!\n\n");
+		}
+
+		system("PAUSE");  // Windows
+	} while (op != 0);
+	
+	return 0;
 }
