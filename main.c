@@ -305,9 +305,7 @@ int main() {
                 scanf(" %49[^\n]s", nome);
                 // retorna a posição do vetor em que está o nome
                 num = pesquisarPedidosNome(vetorPedidos, nome);
-                // obtem o id do pedido da posição do vetor
-                num = vetorPedidos[num].pedido.id;
-                imprimirPedido(vetorPedidos, vetorLanches, num);
+                imprimirPedido(vetorPedidos, vetorLanches, vetorPedidos[num].pedido.id);
                 break;
             case 5:
                 atualizarQuantidade(vetorPedidos, vetorLanches);
