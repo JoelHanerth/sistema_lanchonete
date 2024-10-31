@@ -12,7 +12,7 @@ struct Lanche {
 typedef struct Lanche Lanche;
 
 struct Lanches {
-    Lanche lanche;
+    Lanche vetorLanches[100];
     int quant;
 };
 typedef struct Lanches Lanches;
@@ -27,33 +27,38 @@ struct Pedido {
 typedef struct Pedido Pedido;
 
 struct Pedidos {
-    Pedido pedido;
+    // Pedido pedido;
+	Pedido vetorPedidos[100];
     int quant;
 };
 typedef struct Pedidos Pedidos;
 
 // PESQUISAR
-int pesquisarLancheID(Lanches vetorLanches[], int pesq) {
-    for (int i = 0; i < vetorLanches[0].quant; i++) {
-        if (vetorLanches[i].lanche.id == pesq) {
+int pesquisarLancheID(Lanches lanches, int pesq) {
+	int i;
+    for (i = 0; i < lanches.quant; i++) {
+        if (lanches.vetorLanches[i].id == pesq) {
             return i;
         }
     }
     return -1;
 }
 
-int pesquisarPedidosID(Pedidos vetorPedidos[], int pesq) {
-    for (int i = 0; i < vetorPedidos[0].quant; i++) {
-        if (vetorPedidos[i].pedido.id == pesq) {
+int pesquisarPedidosID(Pedidos pedidos, int pesq) {
+	int i;
+	// printf("TAMANHO %d",pedidos.quant);
+    for (i = 0; i < pedidos.quant; i++) {
+        if (pedidos.vetorPedidos[i].id == pesq) {
             return i;
         }
     }
     return -1;
 }
 
-int pesquisarPedidosNome(Pedidos vetorPedidos[], char *nome) {
-    for (int i = 0; i < vetorPedidos[0].quant; i++) {
-        if (strcmp(vetorPedidos[i].pedido.nomeCliente, nome) == 0) {
+int pesquisarPedidosNome(Pedidos pedidos, char *nome) {
+	int i;
+    for (i = 0; i < pedidos.quant; i++) {
+        if (strcmp(pedidos.vetorPedidos[i].nomeCliente, nome) == 0) {
             return i;
         }
     }
@@ -61,38 +66,40 @@ int pesquisarPedidosNome(Pedidos vetorPedidos[], char *nome) {
 }
 
 // IMPRIMIR
-void imprimirPedido(Pedidos vetorPedidos[], Lanches vetorLanches[], int id) {
+void imprimirPedido(Pedidos pedidos, Lanches lanches, int id) {
     int pesq1, pesq2;
     printf("\n");
 
-    pesq1 = pesquisarPedidosID(vetorPedidos, id);
+    pesq1 = pesquisarPedidosID(pedidos, id);
     if (pesq1 != -1) {
         // pra achar o endereço do lanche correspondente ao pedido
-        pesq2 = pesquisarLancheID(vetorLanches, (vetorPedidos[pesq1].pedido.tipoLanche));
+        pesq2 = pesquisarLancheID(lanches, (pedidos.vetorPedidos[pesq1].tipoLanche));
 
-        printf("Número do pedido: %d\n", vetorPedidos[pesq1].pedido.id);
-        printf("ID %d: %s\n", vetorLanches[pesq2].lanche.id, vetorLanches[pesq2].lanche.nome);
-        printf("Ingredientes: %s\n", vetorLanches[pesq2].lanche.ingredientes);
-        printf("Preço unitário: R$%lf\n", vetorLanches[pesq2].lanche.preco);
-        printf("Quantidade: %d\n", vetorPedidos[pesq1].pedido.quant);
-        printf("Preço final do pedido: R$%lf\n", vetorPedidos[pesq1].pedido.valorPedido);
-        printf("Nome do Cliente: %s\n\n", vetorPedidos[pesq1].pedido.nomeCliente);
+        printf("Número do pedido: %d\n", pedidos.vetorPedidos[pesq1].id);
+        printf("ID %d: %s\n", lanches.vetorLanches[pesq2].id, lanches.vetorLanches[pesq2].nome);
+        printf("Ingredientes: %s\n", lanches.vetorLanches[pesq2].ingredientes);
+        printf("Preço unitário: R$%.2lf\n", lanches.vetorLanches[pesq2].preco);
+        printf("Quantidade: %d\n", pedidos.vetorPedidos[pesq1].quant);
+        printf("Preço final do pedido: R$%.2lf\n", pedidos.vetorPedidos[pesq1].valorPedido);
+        printf("Nome do Cliente: %s\n\n", pedidos.vetorPedidos[pesq1].nomeCliente);
     } else {
         printf("PEDIDO NÃO ENCONTRADO\n\n");
     }
 }
 
-void imprimirLanches(Lanches vetorLanches[]) {
+void imprimirLanches(Lanches lanches) {
+	int i;
     printf("\nLANCHES DISPONÍVEIS:\n");
-    for (int i = 0; i < vetorLanches[0].quant; i++) {
-        printf("ID %d - %s ---- R$%lf\n", vetorLanches[i].lanche.id, vetorLanches[i].lanche.nome, vetorLanches[i].lanche.preco);
+    for (i = 0; i < lanches.quant; i++) {
+        printf("ID %d - %s ---- R$%lf\n", lanches.vetorLanches[i].id, lanches.vetorLanches[i].nome, lanches.vetorLanches[i].preco);
     }
     printf("\n");
 }
 
-void listar(Pedidos vetorPedidos[], Lanches vetorLanches[]) {
-    for (int i = 0; i < vetorPedidos[0].quant; i++) {
-        imprimirPedido(vetorPedidos, vetorLanches, vetorPedidos[i].pedido.id);
+void listar(Pedidos pedidos, Lanches lanches) {
+	int i;
+    for (i = 0; i < pedidos.quant; i++) {
+        imprimirPedido(pedidos, lanches, pedidos.vetorPedidos[i].id);
     }
 }
 
@@ -122,115 +129,117 @@ int obterNumIntPositivo(char *mensagem) {
 }
 
 // INSERIR DADOS
-void inserirLanche(Lanches vetorLanches[]) {
+void inserirLanche(Lanches *lanches) {
     int aux, pesq;
 
     // numero do pedido
     do {
         aux = obterNumIntPositivo("\nInforme o id do lanche: ");
-        pesq = pesquisarLancheID(vetorLanches, aux);
+        pesq = pesquisarLancheID(*lanches, aux);
         if (pesq != -1) {
             printf("ID JÁ CADASTRADO\n");
         }
     } while (pesq != -1);
 
     // adiciona o id no vetor
-    vetorLanches[vetorLanches[0].quant].lanche.id = aux;
+    lanches->vetorLanches[lanches->quant].id = aux;
 
     // nome do lanche
     printf("Informe o nome do lanche: ");
-    scanf(" %49[^\n]s", vetorLanches[vetorLanches[0].quant].lanche.nome);
+    scanf(" %49[^\n]s", lanches->vetorLanches[lanches->quant].nome);
 
     // ingredientes do lanche
     printf("Informe os ingredientes do lanche: ");
-    scanf(" %299[^\n]s", vetorLanches[vetorLanches[0].quant].lanche.ingredientes);
+    scanf(" %299[^\n]s", lanches->vetorLanches[lanches->quant].ingredientes);
 
     // preco do lanche
-    vetorLanches[vetorLanches[0].quant].lanche.preco = verificarPreco();
+    lanches->vetorLanches[lanches->quant].preco = verificarPreco();
 
-    vetorLanches[0].quant += 1;
+    lanches->quant += 1;
 }
 
-void inserirPedido(Pedidos vetorPedidos[], Lanches vetorLanches[]) {
+void inserirPedido(Pedidos *pedidos, Lanches *lanches) {
     int aux, pesq;
     double preco;
 
-    if (vetorLanches[0].quant > 0) {
+    if (lanches->quant > 0) {
         // numero do pedido
         do {
             printf("Informe o número do pedido: ");
             scanf("%d", &aux);
-            pesq = pesquisarPedidosID(vetorPedidos, aux);
+            pesq = pesquisarPedidosID(*pedidos, aux);
             if (pesq != -1) {
-                printf("\nPEDIDO JÁ EXISTENTE\n");
+    			printf("\nPEDIDO JÁ EXISTENTE. Informe um número diferente.\n");
             }
         } while (pesq != -1);
 
         // salva o numero do pedido
-        vetorPedidos[vetorPedidos[0].quant].pedido.id = aux;
+		pedidos->vetorPedidos[pedidos->quant].id = (aux);
 
         // pega id de lanche
         do {
-            imprimirLanches(vetorLanches);
+            imprimirLanches(*lanches);
 
             printf("Informe o id do lanche: ");
             scanf("%d", &aux);
-            pesq = pesquisarLancheID(vetorLanches, aux);
+            pesq = pesquisarLancheID(*lanches, aux);
             if (pesq == -1) {
                 printf("\nID inexistente\n");
             }
         } while (pesq == -1);
 
         // salva o id
-        vetorPedidos[vetorPedidos[0].quant].pedido.tipoLanche = aux;
+		pedidos->vetorPedidos[pedidos->quant].tipoLanche = aux;
 
         // obtem o preco do lanche
-        preco = vetorLanches[pesq].lanche.preco;
+        preco = lanches->vetorLanches[pesq].preco;
 
         // quantidade de lanche
         aux = obterNumIntPositivo("Informe a quantidade de lanche: ");
         // salva a quantidade do pedido
-        vetorPedidos[vetorPedidos[0].quant].pedido.quant = aux;
+		pedidos->vetorPedidos[pedidos->quant].quant = aux;
 
         // calcula o valor TOTAL do pedido
-        vetorPedidos[vetorPedidos[0].quant].pedido.valorPedido = aux * preco;
+		pedidos->vetorPedidos[pedidos->quant].valorPedido = aux * preco;
 
         // nome do cliente
         printf("Informe o nome do cliente: ");
-        scanf(" %49[^\n]s", vetorPedidos[vetorPedidos[0].quant].pedido.nomeCliente);
+        scanf(" %49[^\n]s", pedidos->vetorPedidos[pedidos->quant].nomeCliente);
 
-        vetorPedidos[0].quant += 1;
+		pedidos->quant +=1;
+		// printf("aaaaaaaa %d", pedidos.quant);
     } else {
         printf("\nVocê precisa cadastrar ao menos 1 lanche\n");
     }
 }
 
-int maiorPedido(Pedidos vetorPedidos[]) {
+int maiorPedido(Pedidos pedidos) {
     int maior = -1;
     int id = -1;
-    for (int i = 0; i < vetorPedidos[0].quant; i++) {
-        if (vetorPedidos[i].pedido.valorPedido > maior) {
-            maior = vetorPedidos[i].pedido.valorPedido;
-            id = vetorPedidos[i].pedido.id;
+	int i;
+    for (i = 0; i < pedidos.quant; i++) {
+        if (pedidos.vetorPedidos[i].valorPedido > maior) {
+            maior = pedidos.vetorPedidos[i].valorPedido;
+            id = pedidos.vetorPedidos[i].id;
         }
     }
     return id;
 }
 
-void atualizarQuantidade(Pedidos vetorPedidos[], Lanches vetorLanches[]) {
+void atualizarQuantidade(Pedidos *pedidos, Lanches *lanches) {
     int id = obterNumIntPositivo("\nInforme o número do pedido: ");
-    int pesq1 = pesquisarPedidosID(vetorPedidos, id);
+    int pesq1 = pesquisarPedidosID(*pedidos, id);
     
     if (pesq1 != -1) {
         int quant = obterNumIntPositivo("\n\nInforme a nova quantidade do pedido: ");
         // atualiza a quantidade
-        vetorPedidos[pesq1].pedido.quant = quant;
+		pedidos->vetorPedidos[pesq1].quant = quant;
 
         // procura o endereço do vetor onde o ID do lanche do pedido está armazenado
-        int pesq2 = pesquisarLancheID(vetorLanches, vetorPedidos[pesq1].pedido.tipoLanche);
+        int pesq2 = pesquisarLancheID(*lanches, pedidos->vetorPedidos[pesq1].tipoLanche);
 
         // atualiza o valor TOTAL do pedido
-        vetorPedidos[pesq1].pedido.valorPedido = quant * (vetorLanches[pesq2].lanche.preco);
+		pedidos->vetorPedidos[pesq1].valorPedido = quant * (lanches->vetorLanches[pesq2].preco);
 
         printf("\nQuantidade Atualizada\n");
     } else {
@@ -239,16 +248,17 @@ void atualizarQuantidade(Pedidos vetorPedidos[], Lanches vetorLanches[]) {
 }
 
 // EXCLUIR
-void excluir(Pedidos vetorPedidos[], int pos) {
-    int tamanho =  vetorPedidos[0].quant;
+void excluir(Pedidos *pedidos, int pos) {
+    int tamanho = pedidos->quant;
+    int i;
 
     if (pos != -1 && pos < tamanho) {
         // Excluir o pedido deslocando os itens subsequentes para a esquerda
-        for (int i = pos + 1; i < tamanho; i++) {
-            vetorPedidos[i - 1] = vetorPedidos[i];
+        for (i = pos + 1; i < tamanho; i++) {
+            pedidos->vetorPedidos[i - 1] = pedidos->vetorPedidos[i];
         }
         // Atualizar a quantidade
-        vetorPedidos[0].quant = tamanho - 1;
+        pedidos->quant -= 1;
         printf("\nDado Excluído.\n\n");
     } else {
         printf("\nPosição inválida ou pedido não encontrado!\n\n");
@@ -260,7 +270,7 @@ void excluir(Pedidos vetorPedidos[], int pos) {
 int menu() {
     int op;
     // system("@cls||clear");  // LIMPA A TELA
-    printf("\n\nSISTEMA XXYYZZ\n\n");
+    printf("\n\nSISTEMA LANCHONETE\n\n");
     printf("1 - Inserir Lanche\n");
     printf("2 - Inserir Pedido\n");
     printf("3 - Pesquisar por número\n");
@@ -280,10 +290,10 @@ int menu() {
 // MAIN
 int main() {
     SetConsoleOutputCP(65001);
-    Pedidos vetorPedidos[100];
-    Lanches vetorLanches[100];
-    vetorLanches[0].quant = 0;
-    vetorPedidos[0].quant = 0;
+	Pedidos pedidos;
+	Lanches Lanches;
+	pedidos.quant = 0;
+	Lanches.quant = 0;
 
     int op, num;
     char nome[50];
@@ -294,41 +304,42 @@ int main() {
             case 0:
                 break;
             case 1:
-                inserirLanche(vetorLanches);
+                inserirLanche(&Lanches);
                 break;
             case 2:
-                inserirPedido(vetorPedidos, vetorLanches);
+                inserirPedido(&pedidos, &Lanches);
                 break;
             case 3:
                 num = obterNumIntPositivo("\n\nInforme o número do pedido: ");
-                imprimirPedido(vetorPedidos, vetorLanches, num);
+                imprimirPedido(pedidos, Lanches, num);
                 break;
             case 4:
                 // PESQUISAR POR NOME
                 printf("Informe o nome do cliente: ");
                 scanf(" %49[^\n]s", nome);
                 // retorna a posição do vetor em que está o nome
-                num = pesquisarPedidosNome(vetorPedidos, nome);
-                imprimirPedido(vetorPedidos, vetorLanches, vetorPedidos[num].pedido.id);
+                num = pesquisarPedidosNome(pedidos, nome);
+                imprimirPedido(pedidos, Lanches, pedidos.vetorPedidos[num].id);
                 break;
             case 5:
-                atualizarQuantidade(vetorPedidos, vetorLanches);
+                atualizarQuantidade(&pedidos, &Lanches);
                 break;
             case 6:
                 // MAIOR
-                if (vetorPedidos[0].quant > 0) {
-                    imprimirPedido(vetorPedidos, vetorLanches, maiorPedido(vetorPedidos));
+                if (pedidos.quant > 0) {
+                    imprimirPedido(pedidos, Lanches, maiorPedido(pedidos));
                 } else {
                     printf("\nNenhum pedido encontrado\n");
                 }
                 break;
             case 7:
-                num = obterNumIntPositivo("\nInforme o ID do pedido a ser excluído: ");
-                num = pesquisarPedidosID(vetorPedidos, num);
-                excluir(vetorPedidos, num);
-                break;
+				num = obterNumIntPositivo("\nInforme o ID do pedido a ser excluído: ");
+				num = pesquisarPedidosID(pedidos, num);
+				excluir(&pedidos, num); // Passando como ponteiro
+				break;
+
             case 8:
-                listar(vetorPedidos, vetorLanches);
+                listar(pedidos, Lanches);
                 break;
             default:
                 printf("\n\nOpção inválida!\n\n");
