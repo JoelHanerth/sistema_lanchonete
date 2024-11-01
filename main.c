@@ -291,9 +291,9 @@ int menu() {
 int main() {
     SetConsoleOutputCP(65001);
 	Pedidos pedidos;
-	Lanches Lanches;
+	Lanches lanches;
 	pedidos.quant = 0;
-	Lanches.quant = 0;
+	lanches.quant = 0;
 
     int op, num;
     char nome[50];
@@ -304,30 +304,29 @@ int main() {
             case 0:
                 break;
             case 1:
-                inserirLanche(&Lanches);
+                inserirLanche(&lanches);
                 break;
             case 2:
-                inserirPedido(&pedidos, &Lanches);
+                inserirPedido(&pedidos, &lanches);
                 break;
             case 3:
                 num = obterNumIntPositivo("\n\nInforme o número do pedido: ");
-                imprimirPedido(pedidos, Lanches, num);
+                imprimirPedido(pedidos, lanches, num);
                 break;
             case 4:
-                // PESQUISAR POR NOME
                 printf("Informe o nome do cliente: ");
                 scanf(" %49[^\n]s", nome);
                 // retorna a posição do vetor em que está o nome
                 num = pesquisarPedidosNome(pedidos, nome);
-                imprimirPedido(pedidos, Lanches, pedidos.vetorPedidos[num].id);
+                if (num != -1){ imprimirPedido(pedidos, lanches, pedidos.vetorPedidos[num].id); }
                 break;
             case 5:
-                atualizarQuantidade(&pedidos, &Lanches);
+                atualizarQuantidade(&pedidos, &lanches);
                 break;
             case 6:
                 // MAIOR
                 if (pedidos.quant > 0) {
-                    imprimirPedido(pedidos, Lanches, maiorPedido(pedidos));
+                    imprimirPedido(pedidos, lanches, maiorPedido(pedidos));
                 } else {
                     printf("\nNenhum pedido encontrado\n");
                 }
@@ -339,7 +338,7 @@ int main() {
 				break;
 
             case 8:
-                listar(pedidos, Lanches);
+                listar(pedidos, lanches);
                 break;
             default:
                 printf("\n\nOpção inválida!\n\n");
