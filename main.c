@@ -265,6 +265,52 @@ void excluir(Pedidos *pedidos, int pos) {
     }
 }
 
+FILE *abrirArquivo (char *endereco, char *modo){
+    FILE *arq;
+
+    arq = fopen(endereco, modo);
+    if (arq == NULL) {
+        printf("Erro ao abrir o arquivo");
+        exit(0);
+    }
+    return arq;
+}
+
+void salvarArquivo(Pedidos pedidos) {
+    FILE *arq;
+    
+    arq = abrirArquivo("../pedidos.bin","wb");
+
+    // Escreve a struct no arquivo binário
+    size_t result = fwrite(&pedidos, sizeof(Pedidos), 1, arq);
+    if (result != 1) { printf("Erro ao escrever no arquivo"); }
+
+    fclose(arq);
+}
+
+
+
+Pedidos carregarArquivos(){
+    FILE *arq;
+    int result;
+    Pedidos pedidos;
+    Lanches lanches;
+    pedidos.quant = 0;
+    lanches.quant = 0;
+
+    arq = abrirArquivo("../pedidos.bin","rb");
+    result = fread( &pedidos, sizeof(Pedidos), 1, arq);
+    if (result != 1) { printf("Erro ao ler o arquivo pedidos"); }
+    fclose(arq);
+
+    arq = abrirArquivo("../lanches.bin","rb");
+    result = fread( &lanches, sizeof(Lanches), 1, arq);
+    if (result != 1) { printf("Erro ao ler o arquivo lanches"); }
+    fclose(arq);
+    
+    return pedidos;
+}
+
 
 // MENU
 int menu() {
@@ -290,9 +336,10 @@ int menu() {
 // MAIN
 int main() {
     SetConsoleOutputCP(65001);
-	Pedidos pedidos;
+	// Pedidos pedidos;
+    Pedidos pedidos = carregarArquivos();
 	Lanches lanches;
-	pedidos.quant = 0;
+    printf("%d",pedidos.quant);
 	lanches.quant = 0;
 
     int op, num;
@@ -346,5 +393,6 @@ int main() {
         system("PAUSE");  // Windows
     } while (op != 0);
 
+    salvarArquivo(pedidos);
     return 0;
 }
