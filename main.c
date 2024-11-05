@@ -91,7 +91,7 @@ void imprimirLanches(Lanches lanches) {
 	int i;
     printf("\nLANCHES DISPONÍVEIS:\n");
     for (i = 0; i < lanches.quant; i++) {
-        printf("ID %d - %s ---- R$%lf\n", lanches.vetorLanches[i].id, lanches.vetorLanches[i].nome, lanches.vetorLanches[i].preco);
+        printf("ID %d - %s ---- R$%.2lf\n", lanches.vetorLanches[i].id, lanches.vetorLanches[i].nome, lanches.vetorLanches[i].preco);
     }
     printf("\n");
 }
@@ -207,7 +207,6 @@ void inserirPedido(Pedidos *pedidos, Lanches *lanches) {
         scanf(" %49[^\n]s", pedidos->vetorPedidos[pedidos->quant].nomeCliente);
 
 		pedidos->quant +=1;
-		// printf("aaaaaaaa %d", pedidos.quant);
     } else {
         printf("\nVocê precisa cadastrar ao menos 1 lanche\n");
     }
@@ -265,50 +264,59 @@ void excluir(Pedidos *pedidos, int pos) {
     }
 }
 
-FILE *abrirArquivo (char *endereco, char *modo){
-    FILE *arq;
-
-    arq = fopen(endereco, modo);
+FILE *abrirArquivo(char *endereco, char *modo) {
+    FILE *arq = fopen(endereco, modo);
     if (arq == NULL) {
-        printf("Erro ao abrir o arquivo");
-        exit(0);
+        printf("Aviso: Não foi possível abrir o arquivo %s. Continuando com lista vazia.\n", endereco);
     }
     return arq;
 }
 
-void salvarArquivo(Pedidos pedidos) {
+void salvarArquivos(Pedidos pedidos, Lanches lanches) {
     FILE *arq;
     
     arq = abrirArquivo("../pedidos.bin","wb");
-
     // Escreve a struct no arquivo binário
-    size_t result = fwrite(&pedidos, sizeof(Pedidos), 1, arq);
-    if (result != 1) { printf("Erro ao escrever no arquivo"); }
+    fwrite(&pedidos, sizeof(Pedidos), 1, arq);
+    fclose(arq);
 
+     arq = abrirArquivo("../lanches.bin","wb");
+    // Escreve a struct no arquivo binário
+    fwrite(&lanches, sizeof(Lanches), 1, arq);
     fclose(arq);
 }
 
 
-
-Pedidos carregarArquivos(){
+Pedidos carregarArquivosPedidos() {
     FILE *arq;
-    int result;
     Pedidos pedidos;
-    Lanches lanches;
-    pedidos.quant = 0;
-    lanches.quant = 0;
+    pedidos.quant = 0; // Inicializa a quantidade com 0, para o caso de o arquivo não existir.
 
-    arq = abrirArquivo("../pedidos.bin","rb");
-    result = fread( &pedidos, sizeof(Pedidos), 1, arq);
-    if (result != 1) { printf("Erro ao ler o arquivo pedidos"); }
-    fclose(arq);
-
-    arq = abrirArquivo("../lanches.bin","rb");
-    result = fread( &lanches, sizeof(Lanches), 1, arq);
-    if (result != 1) { printf("Erro ao ler o arquivo lanches"); }
-    fclose(arq);
+    arq = abrirArquivo("../pedidos.bin", "rb");
+    if (arq != NULL) {
+        fread(&pedidos, sizeof(Pedidos), 1, arq);
+        fclose(arq);
+    } else {
+        printf("Arquivo de pedidos não encontrado. Continuando com lista vazia.\n");
+    }
     
     return pedidos;
+}
+
+Lanches carregarArquivosLanches() {
+    FILE *arq;
+    Lanches lanches;
+    lanches.quant = 0; // Inicializa a quantidade com 0, para o caso de o arquivo não existir.
+
+    arq = abrirArquivo("../lanches.bin", "rb");
+    if (arq != NULL) {
+        fread(&lanches, sizeof(Lanches), 1, arq);
+        fclose(arq);
+    } else {
+        printf("Arquivo de lanches não encontrado. Continuando com lista vazia.\n");
+    }
+    
+    return lanches;
 }
 
 
@@ -336,11 +344,9 @@ int menu() {
 // MAIN
 int main() {
     SetConsoleOutputCP(65001);
-	// Pedidos pedidos;
-    Pedidos pedidos = carregarArquivos();
-	Lanches lanches;
-    printf("%d",pedidos.quant);
-	lanches.quant = 0;
+
+    Pedidos pedidos = carregarArquivosPedidos();
+	Lanches lanches = carregarArquivosLanches();
 
     int op, num;
     char nome[50];
@@ -393,6 +399,6 @@ int main() {
         system("PAUSE");  // Windows
     } while (op != 0);
 
-    salvarArquivo(pedidos);
+    salvarArquivos(pedidos,lanches);
     return 0;
 }
